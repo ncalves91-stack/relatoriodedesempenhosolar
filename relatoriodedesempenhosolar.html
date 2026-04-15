@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Laudo de Diagnóstico Solar – Metalúrgica Nogueira</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background: #f4f7fc;
+    color: #0f172a;
+    line-height: 1.5;
+  }
+  .hero {
+    background: linear-gradient(135deg, #0b2b26 0%, #144d3a 100%);
+    color: white;
+    padding: 3rem 2rem 2.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero:before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 20% 30%, rgba(249,115,22,0.2), transparent 50%);
+  }
+  .hero-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 2;
+  }
+  .logo-area {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 1rem;
+  }
+  .logo-area img {
+    max-height: 55px;
+    background: rgba(255,255,255,0.9);
+    border-radius: 12px;
+    padding: 6px 12px;
+  }
+  .badge {
+    display: inline-block;
+    background: rgba(255,255,255,0.12);
+    backdrop-filter: blur(4px);
+    padding: 6px 14px;
+    border-radius: 40px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    border: 1px solid rgba(255,255,255,0.2);
+    color: #fcd34d;
+  }
+  .hero h1 {
+    font-size: clamp(2rem, 6vw, 3.5rem);
+    margin: 1rem 0 0.5rem;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+  .hero p {
+    font-size: 1.1rem;
+    opacity: 0.85;
+    max-width: 720px;
+  }
+  .top-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 1.5rem;
+    margin-top: 2rem;
+  }
+  .quick-stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+  .stat-card {
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(8px);
+    border-radius: 1.5rem;
+    padding: 1.2rem;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+  .stat-card .label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #fcd34d;
+  }
+  .stat-card .value {
+    font-size: 1.8rem;
+    font-weight: 800;
+    margin-top: 0.3rem;
+    line-height: 1.2;
+  }
+  .stat-card small {
+    font-size: 0.7rem;
+    opacity: 0.7;
+    display: block;
+  }
+  .exec-summary {
+    background: white;
+    color: #0f172a;
+    border-radius: 1.5rem;
+    padding: 1.5rem;
+    box-shadow: 0 20px 35px -12px rgba(0,0,0,0.2);
+  }
+  .exec-summary h3 {
+    font-size: 1.3rem;
+    margin-bottom: 0.75rem;
+    color: #0b2b26;
+  }
+  .exec-summary p {
+    color: #334155;
+    margin-bottom: 1rem;
+    line-height: 1.6;
+  }
+  .tag-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-top: 1rem;
+  }
+  .tag {
+    background: #fef9e6;
+    color: #b45309;
+    padding: 0.3rem 1rem;
+    border-radius: 40px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border: 1px solid #fed7aa;
+  }
+  .nav-sticky {
+    position: sticky;
+    top: 0;
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid #e2e8f0;
+    z-index: 30;
+  }
+  .nav-links {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: flex;
+    gap: 1.8rem;
+    padding: 0.8rem 1.5rem;
+    overflow-x: auto;
+  }
+  .nav-links a {
+    text-decoration: none;
+    font-weight: 600;
+    color: #2c5a4a;
+    font-size: 0.85rem;
+    white-space: nowrap;
+  }
+  .container {
+    max-width: 1280px;
+    margin: 2rem auto;
+    padding: 0 1.5rem 3rem;
+  }
+  section {
+    margin-bottom: 3rem;
+    scroll-margin-top: 5rem;
+  }
+  .section-title {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+  .section-title .number {
+    background: #144d3a;
+    color: white;
+    width: 2rem;
+    height: 2rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 60px;
+    font-weight: 800;
+  }
+  .section-title h2 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #0b2b26;
+  }
+  .lead {
+    color: #475569;
+    margin-bottom: 1.8rem;
+    max-width: 800px;
+  }
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+    margin: 1.5rem 0;
+  }
+  .kpi-card {
+    background: white;
+    border-radius: 1.2rem;
+    padding: 1.2rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    border: 1px solid #e2edf2;
+    text-align: center;
+  }
+  .kpi-card .kpi-value {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #144d3a;
+  }
+  .cards-2col {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+    margin: 1.5rem 0;
+  }
+  .card {
+    background: white;
+    border-radius: 1.2rem;
+    padding: 1.5rem;
+    border: 1px solid #e9edf2;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.02);
+  }
+  .card h3 {
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+    color: #0b2b26;
+  }
+  .table-wrapper {
+    overflow-x: auto;
+    background: white;
+    border-radius: 1rem;
+    border: 1px solid #e2e8f0;
+    margin: 1.5rem 0;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+  }
+  th {
+    background: #f1f5f9;
+    padding: 0.9rem 1rem;
+    text-align: left;
+    font-weight: 600;
+  }
+  td {
+    padding: 0.8rem 1rem;
+    border-bottom: 1px solid #eef2f6;
+  }
+  .badge-perda { background: #fee2e2; color: #b91c1c; padding: 0.2rem 0.6rem; border-radius: 30px; font-weight: 600; font-size: 0.7rem; display: inline-block; }
+  .recomendacao-item {
+    background: #fefaf5;
+    border-left: 4px solid #f97316;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 0.8rem;
+  }
+  .upsell {
+    background: linear-gradient(135deg, #eaf7ef, #d4ede1);
+    border-radius: 1.5rem;
+    padding: 2rem;
+    text-align: center;
+    margin: 2rem 0;
+  }
+  .btn {
+    background: #144d3a;
+    color: white;
+    padding: 0.8rem 2rem;
+    border-radius: 60px;
+    text-decoration: none;
+    font-weight: 700;
+    display: inline-block;
+    margin-top: 1rem;
+  }
+  .footer {
+    background: #0b2b26;
+    color: rgba(255,255,255,0.8);
+    padding: 2rem;
+    border-radius: 1.5rem;
+    margin-top: 2rem;
+    font-size: 0.8rem;
+  }
+  @media (max-width: 800px) {
+    .top-grid, .cards-2col { grid-template-columns: 1fr; }
+    .quick-stats { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="logo-area">
+      <img src="https://i.imgur.com/cce53oS.png" alt="Logo Consultoria Solar">
+    </div>
+    <span class="badge">Laudo de Diagnóstico • Monitoramento Remoto</span>
+    <h1>Relatório de Desempenho Solar</h1>
+    <p><strong>Metalúrgica Nogueira LTDA</strong> • CNPJ: 12.345.678/0001-90<br>Rua das Indústrias, 520 – Distrito Industrial, São Paulo/SP</p>
+    <div class="top-grid">
+      <div class="quick-stats">
+        <div class="stat-card"><div class="label">Potência Instalada</div><div class="value">75,6 kWp</div><small>168 módulos • 320 m²</small></div>
+        <div class="stat-card"><div class="label">Período analisado</div><div class="value">6 meses</div><small>Set/2024 a Fev/2025</small></div>
+        <div class="stat-card"><div class="label">Geração real vs esperada</div><div class="value">67%</div><small>eficiência relativa</small></div>
+        <div class="stat-card"><div class="label">Perda financeira total</div><div class="value">R$ 4.380</div><small>nos últimos 6 meses</small></div>
+      </div>
+      <div class="exec-summary">
+        <h3>🔍 Resumo executivo</h3>
+        <p>Seu sistema gerou 33% a menos do que o esperado nos últimos 6 meses. Perda acumulada de R$ 4.380,00, com forte indício de sujeira acumulada e possível string desconectada.</p>
+        <div class="tag-group">
+          <span class="tag">Status: Atenção</span>
+          <span class="tag">Perda mensal média: R$ 730</span>
+          <span class="tag">Recomendação: Limpeza imediata + inspeção técnica</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="nav-sticky">
+  <div class="nav-links">
+    <a href="#resumo">Resumo</a>
+    <a href="#dados">Dados da Usina</a>
+    <a href="#comparativo">Geração</a>
+    <a href="#anomalias">Anomalias</a>
+    <a href="#recomendacoes">Recomendações</a>
+    <a href="#upsell">Monitoramento Contínuo</a>
+  </div>
+</div>
+
+<div class="container">
+  <!-- Seção Resumo (página 2) -->
+  <section id="resumo">
+    <div class="section-title"><span class="number">1</span><h2>Resumo Executivo</h2></div>
+    <p class="lead">Com base nos dados extraídos da plataforma do inversor (Growatt) nos últimos 6 meses, identificamos que seu sistema está operando com desempenho 33% abaixo do esperado. Abaixo os principais indicadores.</p>
+    <div class="kpi-grid">
+      <div class="kpi-card"><div class="kpi-value">63%</div><div>Performance Ratio (PR)</div><small>referência: >75% = bom</small></div>
+      <div class="kpi-card"><div class="kpi-value">10,2%</div><div>Fator de capacidade</div><small>média Brasil ~16%</small></div>
+      <div class="kpi-card"><div class="kpi-value">R$ 4.380</div><div>Perda acumulada</div><small>6 meses</small></div>
+      <div class="kpi-card"><div class="kpi-value">R$ 8.760</div><div>Projeção de perda 12 meses</div><small>se nada for feito</small></div>
+    </div>
+    <div class="card" style="background:#fefce8;">
+      <h3>⚡ Frase de impacto</h3>
+      <p style="font-size:1.1rem;">Seu sistema deixou de gerar aproximadamente 9.800 kWh nos últimos 6 meses – energia suficiente para abastecer 4 residências médias no mesmo período.</p>
+      <p><strong>Próximo passo imediato:</strong> Realizar limpeza profissional dos módulos e verificar integridade das conexões elétricas.</p>
+    </div>
+  </section>
+
+  <!-- Dados da Usina -->
+  <section id="dados">
+    <div class="section-title"><span class="number">2</span><h2>Dados da Usina</h2></div>
+    <div class="cards-2col">
+      <div class="card"><h3>Características</h3><table style="width:100%"><tr><th>Potência instalada</th><td>75,6 kWp</td></tr>
+      <tr><th>Quantidade de módulos</th><td>168 (450W – JA Solar)</td></tr>
+      <tr><th>Inversor(es)</th><td>Growatt MAX 60KTL3-X (2 unidades)</td></tr>
+      <tr><th>Data de conexão</th><td>15/03/2022</td></tr>
+      <tr><th>Homologação ANEEL</th><td>nº 2022.08.1234</td></tr>
+    </table></div>
+      <div class="card"><h3>Localização e irradiação</h3><table><th>Município/UF</th><td>São Paulo/SP</td></tr>
+      <tr><th>Coordenadas</th><td>-23.5505, -46.6333</td></tr>
+      <tr><th>HSP médio (diário)</th><td>4,35 h/dia</td></tr>
+      <tr><th>Fonte irradiação</th><td>CRESESB / Solcast</td></tr>
+    </table></div>
+    </div>
+  </section>
+
+  <!-- Comparativo Geração + Gráfico -->
+  <section id="comparativo">
+    <div class="section-title"><span class="number">3</span><h2>Comparativo de Geração</h2></div>
+    <p class="lead">Geração real (monitoramento) vs. geração esperada simulada com base na irradiação solar local e potência instalada (fator de desempenho 0,75).</p>
+    <div class="cards-2col">
+      <div class="card">
+        <h3>Evolução mensal (kWh)</h3>
+        <div class="table-wrapper">
+          <table>
+            <thead><tr><th>Mês/Ano</th><th>Real (kWh)</th><th>Esperado (kWh)</th><th>Diferença %</th></tr></thead>
+            <tbody>
+              <tr><td>Set/24</td><td>5.120</td><td>7.840</td><td>-34,7%</td></tr>
+              <tr><td>Out/24</td><td>5.680</td><td>8.200</td><td>-30,7%</td></tr>
+              <tr><td>Nov/24</td><td>5.450</td><td>8.050</td><td>-32,3%</td></tr>
+              <tr><td>Dez/24</td><td>5.220</td><td>7.960</td><td>-34,4%</td></tr>
+              <tr><td>Jan/25</td><td>5.310</td><td>8.110</td><td>-34,5%</td></tr>
+              <tr><td>Fev/25</td><td>5.080</td><td>7.900</td><td>-35,7%</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Gráfico comparativo (últimos 6 meses)</h3>
+        <canvas id="graficoGeracao" style="max-height:280px; width:100%"></canvas>
+      </div>
+    </div>
+    <div class="kpi-grid">
+      <div class="kpi-card"><div class="kpi-value">33,2%</div><div>Perda média mensal</div></div>
+      <div class="kpi-card"><div class="kpi-value">R$ 0,95/kWh</div><div>Tarifa considerada</div><small>Média ENEL SP – grupo A4</small></div>
+    </div>
+  </section>
+
+  <!-- Anomalias Detectadas -->
+  <section id="anomalias">
+    <div class="section-title"><span class="number">4</span><h2>Anomalias Detectadas</h2></div>
+    <p class="lead">Com base na análise das curvas de geração e histórico do inversor, identificamos os seguintes indícios (necessário verificação local para confirmação).</p>
+    <div class="table-wrapper">
+      <table>
+        <thead><tr><th>Evidência nos dados</th><th>Causa provável</th><th>Severidade</th></tr></thead>
+        <tbody>
+          <tr><td>Queda gradual e contínua de geração nos últimos 4 meses</td><td>Acúmulo de sujeira nos módulos (poeira, fuligem)</td><td>🟡 Média</td></tr>
+          <tr><td>Curva diária com pico 50% menor que o esperado</td><td>Possível perda em uma das strings do inversor</td><td>🔴 Alta</td></tr>
+          <tr><td>Nenhum alerta de falha grave no inversor</td><td>Equipamento operacional – problema externo</td><td>🟢 Baixa (mas com impacto)</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card" style="background:#f8fafc;">
+      <h3>📉 Interpretação da curva diária</h3>
+      <canvas id="curvaDiaria" style="max-height:200px; width:100%"></canvas>
+      <p class="small" style="margin-top:0.5rem;">Exemplo ilustrativo baseado no padrão do inversor. Pico reduzido indica possível problema em string ou sujeira.</p>
+    </div>
+  </section>
+
+  <!-- Impacto Financeiro + Recomendações -->
+  <section id="recomendacoes">
+    <div class="section-title"><span class="number">5</span><h2>Impacto Financeiro e Recomendações</h2></div>
+    <div class="cards-2col">
+      <div class="card">
+        <h3>💰 Perdas financeiras</h3>
+        <table style="width:100%">
+          <tr><th>Perda acumulada (6 meses)</th><td>R$ 4.380,00</td></tr>
+          <tr><th>Perda mensal média</th><td>R$ 730,00</td></tr>
+          <tr><th>Projeção próximos 12 meses</th><td>R$ 8.760,00</td></tr>
+          <tr><th>Custo estimado para correção</th><td>Limpeza: R$ 400–700 | Inspeção: R$ 300–500</td></tr>
+        </table>
+      </div>
+      <div class="card">
+        <h3>🛠️ Plano de ação recomendado</h3>
+        <div class="recomendacao-item"><strong>Imediato (próximos 7 dias):</strong> Contratar serviço especializado para limpeza dos 168 módulos.</div>
+        <div class="recomendacao-item"><strong>Curto prazo (15-30 dias):</strong> Inspeção técnica para verificar a string com baixa performance (teste de continuidade e medição individual).</div>
+        <div class="recomendacao-item"><strong>Contínuo:</strong> Contratar monitoramento ativo para evitar recorrência e receber alertas automáticos.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Upsell - Plano de monitoramento contínuo -->
+  <section id="upsell">
+    <div class="upsell">
+      <h2 style="color:#0b2b26;">🔒 Evite surpresas na conta de luz</h2>
+      <p style="font-size:1.1rem;">Assine o plano de monitoramento contínuo e receba alertas automáticos, relatórios quinzenais e suporte remoto.</p>
+      <div style="font-size:2rem; font-weight:800;">R$ 79/mês</div>
+      <div style="margin: 1rem 0;">✔️ Relatório quinzenal personalizado<br>✔️ Alerta se geração cair >20%<br>✔️ Acompanhamento de performance (PR, capacidade)<br>✔️ Indicação de técnicos parceiros</div>
+      <a href="#" class="btn">Assinar Plano Essencial – diagnóstico gratuito incluso</a>
+      <div style="margin-top:1rem; font-size:0.8rem;">Clientes que assinarem o plano têm o valor do diagnóstico (R$197) integralmente abatido na primeira mensalidade.</div>
+    </div>
+  </section>
+
+  <!-- Metodologia e rodapé -->
+  <div class="footer">
+    <strong>Metodologia</strong><br>
+    Geração esperada calculada com base nas horas de sol pico (HSP) da região (fonte: CRESESB / Solcast), potência instalada e fator de desempenho médio de 0,75. Dados reais extraídos da plataforma de monitoramento do inversor. As análises de anomalias são inferências baseadas em padrões de geração; recomenda-se validação local por profissional habilitado.
+    <br><br>
+    Laudo de diagnóstico remoto – 15/03/2025 | Protocolo: SOL-METAL-2025-001<br>
+    Consultoria Solar Especializada – CNPJ: 55.123.456/0001-00
+  </div>
+</div>
+
+<script>
+  // Gráfico de geração mensal (dados fictícios)
+  const mesesLabels = ["Set/24","Out/24","Nov/24","Dez/24","Jan/25","Fev/25"];
+  const realData = [5120, 5680, 5450, 5220, 5310, 5080];
+  const esperadoData = [7840, 8200, 8050, 7960, 8110, 7900];
+  
+  new Chart(document.getElementById('graficoGeracao'), {
+    type: 'line',
+    data: { labels: mesesLabels, datasets: [
+      { label: 'Geração real (kWh)', data: realData, borderColor: '#f97316', backgroundColor: 'rgba(249,115,22,0.1)', fill: true, tension: 0.3 },
+      { label: 'Geração esperada (kWh)', data: esperadoData, borderColor: '#144d3a', borderDash: [5,5], fill: false, tension: 0.3 }
+    ]},
+    options: { responsive: true, maintainAspectRatio: true }
+  });
+
+  // Curva diária ilustrativa (com perda)
+  const horas = Array.from({length: 24}, (_, i) => i + "h");
+  const potenciaIdeal = horas.map(h => (h >= 6 && h <= 18) ? 45 * Math.sin(Math.PI * (h-6)/12) : 0);
+  const potenciaReal = potenciaIdeal.map(v => v * 0.48); // perda de 52% no pico
+  new Chart(document.getElementById('curvaDiaria'), {
+    type: 'line',
+    data: { labels: horas, datasets: [
+      { label: 'Curva esperada (kW)', data: potenciaIdeal, borderColor: '#2b8c4a', borderWidth: 2, fill: false },
+      { label: 'Curva real observada (kW)', data: potenciaReal, borderColor: '#dc2626', borderWidth: 2, fill: false, borderDash: [4,4] }
+    ]},
+    options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'bottom' } } }
+  });
+</script>
+</body>
+</html>
